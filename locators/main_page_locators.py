@@ -6,3 +6,4 @@ class MainPageLocators:
     FOOTER_ORDER = (By.XPATH, "(//button[text()='Заказать'])[2]")
     SCOOTER_LOGO = (By.CLASS_NAME, 'Header_LogoScooter__3lsAR')
     YANDEX_LOGO = (By.CLASS_NAME, 'Header_LogoYandex__3TSOI')
+    COOKIE_BUTTON = (By.ID, 'rcc-confirm-button')

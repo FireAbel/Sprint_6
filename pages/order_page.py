@@ -10,68 +10,36 @@ from pages.base_page import BasePage
 class OrderPage(BasePage):
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
+        self.locators = OrderPageLocators()
 
+    @allure.step("Заполняем первую часть формы заказа")
     def fill_first_page(self, name, last_name, address, metro_station, phone):
-            WebDriverWait(self.driver, 3).until(
-                EC.visibility_of_element_located(OrderPageLocators.NAME_INPUT)
-            ).send_keys(name)
+        self.send_keys(self.locators.NAME_INPUT, name)
+        self.send_keys(self.locators.LAST_NAME_INPUT, last_name)
+        self.send_keys(self.locators.ADDRESS_INPUT, address)
+        self.send_keys(self.locators.METRO_STATION_INPUT, metro_station)
+        self.click(self.locators.METRO_STATION_OPTION)
+        self.send_keys(self.locators.PHONE_INPUT, phone)
+        self.click(self.locators.NEXT_BUTTON)
 
-            WebDriverWait(self.driver, 3).until(
-                EC.visibility_of_element_located(OrderPageLocators.LAST_NAME_INPUT)
-            ).send_keys(last_name)
-
-            WebDriverWait(self.driver, 3).until(
-                EC.visibility_of_element_located(OrderPageLocators.ADDRESS_INPUT)
-            ).send_keys(address)
-
-            metro_input = WebDriverWait(self.driver, 3).until(
-                EC.element_to_be_clickable(OrderPageLocators.METRO_STATION_INPUT)
-            )
-            metro_input.send_keys(metro_station)
-
-            WebDriverWait(self.driver, 3).until(
-                EC.element_to_be_clickable(OrderPageLocators.METRO_STATION_OPTION)
-            ).click()
-
-            WebDriverWait(self.driver, 3).until(
-                EC.visibility_of_element_located(OrderPageLocators.PHONE_INPUT)
-            ).send_keys(phone)
-
-            WebDriverWait(self.driver, 3).until(
-                EC.element_to_be_clickable(OrderPageLocators.NEXT_BUTTON)
-            ).click()
-
-
+    @allure.step("Заполняем вторую часть формы заказа")
     def fill_second_page(self, date, comment):
-        date_input = WebDriverWait(self.driver, 3).until(EC.visibility_of_element_located(OrderPageLocators.DATE_INPUT))
-        date_input.clear()
-        date_input.send_keys(date)
-        date_input.send_keys(Keys.RETURN)
+        self.send_keys(self.locators.DATE_INPUT, date + Keys.RETURN)
 
-        dropdown = WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(OrderPageLocators.RENTAL_PERIOD_DROPDOWN))
-        dropdown.click()
+        self.click(self.locators.RENTAL_PERIOD_DROPDOWN)
+        self.click(self.locators.RENTAL_PERIOD_OPTION)
 
-        option = WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(OrderPageLocators.RENTAL_PERIOD_OPTION))
-        option.click()
+        self.scroll_to_locator(self.locators.COLOR_CHECKBOX)
+        self.click(self.locators.COLOR_CHECKBOX)
 
-        color_checkbox = WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(OrderPageLocators.COLOR_CHECKBOX))
-        self.driver.execute_script("arguments[0].scrollIntoView();", color_checkbox)
+        self.send_keys(self.locators.COMMENT_INPUT, comment)
 
-        if not color_checkbox.is_selected():
-            color_checkbox.click()
+        self.scroll_to_locator(self.locators.ORDER_BUTTON)
+        self.click(self.locators.ORDER_BUTTON)
 
-        assert color_checkbox.is_selected(), "Цвет не был выбран"
+        self.find_visible(self.locators.ORDER_SUCCESS_MODAL)
+        self.click(self.locators.CONFIRM_ORDER_BUTTON)
 
-        comment_input = WebDriverWait(self.driver, 3).until(EC.visibility_of_element_located(OrderPageLocators.COMMENT_INPUT))
-        comment_input.send_keys(comment)
-
-        order_button = WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(OrderPageLocators.ORDER_BUTTON))
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", order_button)
-        self.driver.execute_script("arguments[0].click();", order_button)
-
-        WebDriverWait(self.driver, 3).until(EC.visibility_of_element_located(OrderPageLocators.ORDER_SUCCESS_MODAL))
-        confirm_button = WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(OrderPageLocators.CONFIRM_ORDER_BUTTON))
-        confirm_button.click()
-
+    @allure.step("Проверяем, что заказ оформлен")
     def check_order_success(self):
-        return self.find_element(OrderPageLocators.ORDER_SUCCESS_MODAL).text
+        return self.find_visible(self.locators.ORDER_SUCCESS_MODAL).text

@@ -25,6 +25,9 @@ class OrderData:
         'comment': 'Не звонить'
     }
 
+class OrderMessages:
+    SUCCESS_TEXT = "Заказ оформлен"
+
 class FaqData:
     QUESTIONS_ANSWERS = {
         "Сколько это стоит? И как оплатить?": "Сутки — 400 рублей. Оплата курьеру — наличными или картой.",
