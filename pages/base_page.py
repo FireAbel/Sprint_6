@@ -35,4 +35,7 @@ class BasePage:
         return self.driver.switch_to.window(self.driver.window_handles[1])
 
     def wait_for_page_load(self):
-        WebDriverWait(self.driver, 10).until(lambda driver: driver.execute_script("return document.readyState") == "complete")
+        WebDriverWait(self.driver, 60).until(lambda driver: driver.execute_script("return document.readyState") == "complete")
+
+    def get_current_url(self):
+        return self.driver.current_url
